@@ -73,9 +73,15 @@ struct Triangle {
 	}
 };
 
+const float pi=3.1415926535;
+
 int main(int argc, char **argv) {
 	programOptions::options_description cmdOpts("Usage");
-	cmdOpts.add_options()("h", programOptions::value<int>(), "Height in mm")("l", programOptions::value<int>(), "Length in mm")("w", programOptions::value<int>(), "Width in mm");
+	cmdOpts.add_options()
+			("h", programOptions::value<int>(), "Height in mm")
+			("l", programOptions::value<int>(), "Length in mm")
+			("w", programOptions::value<int>(), "Width in mm")
+			("s", programOptions::value<float>()->default_value(2),"Slope");
 	programOptions::variables_map variablesMap;
 	try {
 		programOptions::store(programOptions::parse_command_line(argc, argv, cmdOpts), variablesMap);
@@ -96,6 +102,7 @@ int main(int argc, char **argv) {
 	int length = getOption("l").as<int>();
 	int width = getOption("w").as<int>();
 	int height = getOption("h").as<int>();
+	float slope = getOption("s").as<float>();
 
 	Point bottomRF(0,0,0), bottomLF(0,width-1,0), bottomRB(length-1,0,0), bottomLB(length-1,width-1,0);
 
@@ -118,7 +125,7 @@ int main(int argc, char **argv) {
 		current.x = l;
 		for (int w = 0; w < width; w++) {
 			current.y = w;
-			current.z = height + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/1);
+			current.z = height +slope*sin(l*pi/length)+slope*sin(w*pi/width)+ static_cast <float> (rand()) / static_cast <float> (RAND_MAX/1);
 			if (l == 0) { // first row, connect to bottom
 				if (w != 0) {
 					Triangle *t = new Triangle(w < wHalf?bottomRF:bottomLF,last,current);
