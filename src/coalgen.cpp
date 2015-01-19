@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 	int width = getOption("w").as<int>();
 	int height = getOption("h").as<int>();
 
-	Point bottomRF(0,0,0), bottomLF(0,width,0), bottomRB(length,0,0), bottomLB(length,width,0);
+	Point bottomRF(0,0,0), bottomLF(0,width-1,0), bottomRB(length-1,0,0), bottomLB(length-1,width-1,0);
 
 	Triangle startTriangle(bottomRF,bottomLF,bottomLB);
 
@@ -121,16 +121,13 @@ int main(int argc, char **argv) {
 			current.z = height + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/1);
 			if (l == 0) { // first row, connect to bottom
 				if (w == 0) { // first column
-
+					// do nothing on very first point
 				} else { // connect to bottomLF
 					Triangle *t = new Triangle(w < wHalf?bottomRF:bottomLF,last,current);
 					triangle_p->next = t;
 					triangle_p = t;
 				}
-			} else if (l == length-1){ // last row
-
-			} else if (l<length){
-				cerr << "B";
+			} else {
 				if (w == 0) { // first column
 					Point p(l-1,w,lastHeights[w]);
 					Triangle *t = new Triangle(p,l<lHalf?bottomRF:bottomRB,current);
@@ -146,10 +143,12 @@ int main(int argc, char **argv) {
 					t = new Triangle(p2,p1,current);
 					triangle_p->next = t;
 					triangle_p = t;
+					if (l==length-1){
+						Triangle *t = new Triangle(last,w<wHalf?bottomRB:bottomLB,current);
+						triangle_p->next = t;
+						triangle_p = t;
+					}
 				}
-
-			} else {
-				cerr << "A";
 			}
 			heights[w] = current.z;
 			last = current;
