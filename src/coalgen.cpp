@@ -113,43 +113,52 @@ int main(int argc, char **argv) {
 //	cout << "width = " << width << endl;
 //	cout << "lenght= " << length << endl;
 	int count = 0;
+	int lastHeights[width];
 	for (int l = 0; l < length; l++) {
-		current.x = l;
 		int heights[width];
+		current.x = l;
 		for (int w = 0; w < width; w++) {
 			current.y = w;
-			current.z = height -1 + rand() % 3;
+			current.z = height -1 + rand() % 2;
 			if (l == 0) { // first row, connect to bottom
 				if (w == 0) { // first column
 
-				} else if (w < wHalf) { // connect to bottomLF
-					Triangle *t = new Triangle(bottomRF,last,current);
-					triangle_p->next = t;
-					triangle_p = t;
 				} else { // connect to bottomLF
-					Triangle *t = new Triangle(bottomLF,last,current);
+					Triangle *t = new Triangle(w < wHalf?bottomRF:bottomLF,last,current);
 					triangle_p->next = t;
 					triangle_p = t;
 				}
-			}else if (l == length-1){
+			} else if (l == length-1){ // last row
 
-			} else if (length<lHalf){
+			} else if (l<length){
+				cerr << "B";
 				if (w == 0) { // first column
-
-				} else {
-					Point p(w-1,l-1,heights[w-1]);
-					Triangle *t = new Triangle(p,last,current);
+					Point p(l-1,w,lastHeights[w]);
+					Triangle *t = new Triangle(p,l<lHalf?bottomRF:bottomRB,current);
 					triangle_p->next = t;
 					triangle_p = t;
+
+				} else {
+					Point p1(l-1,w-1,lastHeights[w-1]);
+					Triangle *t = new Triangle(p1,last,current);
+					triangle_p->next = t;
+					triangle_p = t;
+
+					Point p2(l-1,w,lastHeights[w]);
+					t = new Triangle(p2,p1,current);
+					triangle_p->next = t;
+					triangle_p = t;
+
 				}
 
 			} else {
-
+				cerr << "A";
 			}
-			last = current;
 			heights[w] = current.z;
+			last = current;
 //			cout << endl;
 		}
+		copy(heights,heights+width,lastHeights);
 	}
 
 	triangle_p = &startTriangle;
