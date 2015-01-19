@@ -7,12 +7,12 @@ using namespace std;
 namespace programOptions = boost::program_options;
 
 struct Point {
-	int x = 0, y = 0, z = 0;
+	float x = 0, y = 0, z = 0;
 	string get() {
 		return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ")";
 	}
 
-	Point(int x, int y, int z){
+	Point(float x, float y, float z){
 		this->x=x;
 		this->y=y;
 		this->z=z;
@@ -28,9 +28,9 @@ struct Point {
 
 class Vector {
 protected:
-	int x = 0, y = 0, z = 0;
+	float x = 0, y = 0, z = 0;
 public:
-	Vector(int x,int y,int z){
+	Vector(float x,float y,float z){
 		this->x=x;
 		this->y=y;
 		this->z=z;
@@ -112,14 +112,13 @@ int main(int argc, char **argv) {
 	Point current, last;
 //	cout << "width = " << width << endl;
 //	cout << "lenght= " << length << endl;
-	int count = 0;
-	int lastHeights[width];
+	float lastHeights[width];
 	for (int l = 0; l < length; l++) {
-		int heights[width];
+		float heights[width];
 		current.x = l;
 		for (int w = 0; w < width; w++) {
 			current.y = w;
-			current.z = height -1 + rand() % 2;
+			current.z = height + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/1);
 			if (l == 0) { // first row, connect to bottom
 				if (w == 0) { // first column
 
@@ -137,7 +136,6 @@ int main(int argc, char **argv) {
 					Triangle *t = new Triangle(p,l<lHalf?bottomRF:bottomRB,current);
 					triangle_p->next = t;
 					triangle_p = t;
-
 				} else {
 					Point p1(l-1,w-1,lastHeights[w-1]);
 					Triangle *t = new Triangle(p1,last,current);
@@ -148,7 +146,6 @@ int main(int argc, char **argv) {
 					t = new Triangle(p2,p1,current);
 					triangle_p->next = t;
 					triangle_p = t;
-
 				}
 
 			} else {
@@ -164,7 +161,6 @@ int main(int argc, char **argv) {
 	triangle_p = &startTriangle;
 	cout << "solid test" << endl;
 
-	count = 0;
 	while (triangle_p) {
 		triangle_p->printTo(cout);
 		cout << endl;
