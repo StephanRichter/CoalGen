@@ -107,8 +107,8 @@ int main(int argc, char **argv) {
 
 	startTriangle.next = triangle_p;
 
-	int wHalf = width / 2;
-	int lHalf = length / 2;
+	int wHalf = (width+1) / 2;
+	int lHalf = (length+1) / 2;
 	Point current, last;
 //	cout << "width = " << width << endl;
 //	cout << "lenght= " << length << endl;
@@ -120,12 +120,16 @@ int main(int argc, char **argv) {
 			current.y = w;
 			current.z = height + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/1);
 			if (l == 0) { // first row, connect to bottom
-				if (w == 0) { // first column
-					// do nothing on very first point
-				} else { // connect to bottomLF
+				if (w != 0) {
 					Triangle *t = new Triangle(w < wHalf?bottomRF:bottomLF,last,current);
 					triangle_p->next = t;
 					triangle_p = t;
+
+					if (w==wHalf){
+						t = new Triangle(bottomRF,last,bottomLF);
+						triangle_p->next = t;
+						triangle_p = t;
+					}
 				}
 			} else {
 				if (w == 0) { // first column
@@ -133,6 +137,18 @@ int main(int argc, char **argv) {
 					Triangle *t = new Triangle(p,l<lHalf?bottomRF:bottomRB,current);
 					triangle_p->next = t;
 					triangle_p = t;
+
+					if (l==lHalf){
+						t = new Triangle(bottomLB,bottomLF,last);
+						triangle_p->next = t;
+						triangle_p = t;
+
+						Point p(l-1,w,lastHeights[w]);
+						t = new Triangle(bottomRB,p,bottomRF);
+						triangle_p->next = t;
+						triangle_p = t;
+					}
+
 				} else {
 					Point p1(l-1,w-1,lastHeights[w-1]);
 					Triangle *t = new Triangle(p1,last,current);
@@ -143,8 +159,20 @@ int main(int argc, char **argv) {
 					t = new Triangle(p2,p1,current);
 					triangle_p->next = t;
 					triangle_p = t;
-					if (l==length-1){
+					if (l==length-1){ // last row
 						Triangle *t = new Triangle(last,w<wHalf?bottomRB:bottomLB,current);
+						triangle_p->next = t;
+						triangle_p = t;
+
+						if (w==wHalf){
+							t = new Triangle(bottomRB,bottomLB,last);
+							triangle_p->next = t;
+							triangle_p = t;
+						}
+					}
+					if (w==width-1){ // last column
+						Point p(l-1,w,lastHeights[w]);
+						Triangle *t = new Triangle(l<lHalf?bottomLF:bottomLB,p,current);
 						triangle_p->next = t;
 						triangle_p = t;
 					}
