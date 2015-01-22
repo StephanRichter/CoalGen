@@ -117,8 +117,6 @@ int main(int argc, char **argv) {
 	int wHalf = (width+1) / 2;
 	int lHalf = (length+1) / 2;
 	Point current, last;
-//	cout << "width = " << width << endl;
-//	cout << "lenght= " << length << endl;
 	float lastHeights[width];
 	for (int l = 0; l < length; l++) {
 		float heights[width];
@@ -194,12 +192,10 @@ int main(int argc, char **argv) {
 
 	triangle_p = &startTriangle;
 	cout << "solid test" << endl;
-
 	while (triangle_p) {
 		triangle_p->printTo(cout);
 		cout << endl;
 		triangle_p = triangle_p->next;
 	}
-
 	cout << "end solid" << endl;
 }
